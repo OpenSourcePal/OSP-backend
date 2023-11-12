@@ -13,9 +13,7 @@ const addUser = async (req: any, res: any) => {
 
 		const existingUser = await User.findOne({ name });
 		if (existingUser) {
-			return res
-				.status(409)
-				.json({ isSuccess: false, message: 'User already exists' });
+			return res.status(200).json({ isSuccess: true, message: existingUser });
 		}
 
 		const userDetails = {
@@ -28,7 +26,7 @@ const addUser = async (req: any, res: any) => {
 		const user = new User(userDetails);
 		await user.save();
 
-		res.status(200).json({ isSuccess: true, message: `User Added` });
+		res.status(200).json({ isSuccess: true, message: user });
 	} catch (error) {
 		logger.error(`Error in addUser: ${error}`);
 		res

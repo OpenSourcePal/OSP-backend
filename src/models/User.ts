@@ -5,6 +5,7 @@ export interface IUser extends Document {
 	name: string;
 	lastUsed: Date;
 	numberOfUsagePerDay: number;
+	isAllowed: boolean;
 }
 
 interface IUserDocument extends IUser {}
@@ -15,6 +16,7 @@ const UserSchema: Schema = new Schema<IUserDocument, IUserModel>({
 	name: { type: String, required: true },
 	lastUsed: { type: Date, required: true },
 	numberOfUsagePerDay: { type: Number, default: 0 },
+	isAllowed: { type: Boolean, default: false },
 });
 
 UserSchema.set('toJSON', {

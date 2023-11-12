@@ -1,6 +1,8 @@
+const { User } = require('../models/User');
+
 const crypto = require('crypto-js');
 const logger = require('../utils/logger');
-const secretKey = process.env.SECRET_KEY;
+const { SECRET } = require('../utils/config');
 
 const encryptedKey: string[] = [
 	'U2FsdGVkX1/e16lPpyRpRmDFBr92LfAxo4v5uCyMnmI=',
@@ -105,19 +107,26 @@ const encryptedKey: string[] = [
 	'U2FsdGVkX1+ch8r1s20phO9wWAHOhQYecP8uDL5kaHs=',
 ];
 
-const checkKey = (req: any, res: any) => {
+const checkKey = async (req: any, res: any) => {
 	try {
-		const { key } = req.body;
-		if (!key) {
+		const { key, name } = req.body;
+		if (!key || !name) {
 			return res
 				.status(401)
 				.json({ isSucces: false, messgae: 'No data received from client' });
 		}
 
+		const user = await User.findOne({ name });
+		if (user.isAllowed) {
+			return res
+				.status(204)
+				.json({ isSuccess: true, message: 'Key is correct' });
+		}
+
 		let isAKey = false;
 
 		encryptedKey.forEach((item, index) => {
-			const bytes = crypto.AES.decrypt(item, secretKey as string);
+			const bytes = crypto.AES.decrypt(item, SECRET as string);
 			const decrypted = bytes.toString(crypto.enc.Utf8);
 			if (decrypted !== key) return;
 			isAKey = true;
@@ -125,12 +134,17 @@ const checkKey = (req: any, res: any) => {
 		});
 
 		if (isAKey) {
-			return res.status(204);
+			await User.findOneAndUpdate({ name }, { isAllowed: isAKey });
+			return res
+				.status(204)
+				.json({ isSuccess: isAKey, message: 'Key is correct' });
 		} else {
-			return res.status(406);
+			return res
+				.status(406)
+				.json({ isSuccess: isAKey, message: 'Key is incorrect' });
 		}
 	} catch (error) {
-		logger.error(`Error in addUser: ${error}`);
+		logger.error(`Error in key: ${error}`);
 		res
 			.status(500)
 			.json({ isSuccess: false, message: 'Internal Server Error' });
