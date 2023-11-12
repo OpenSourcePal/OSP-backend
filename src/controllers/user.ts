@@ -3,14 +3,13 @@ const logger = require('../utils/logger');
 const { User } = require('../models/User');
 
 const addUser = async (req: any, res: any) => {
-	try {
-		if (!req.body) {
+  try {
+		const { name } = req.body;
+		if (!name) {
 			return res
 				.status(401)
 				.json({ isSuccess: false, message: 'No data received from client' });
 		}
-
-		const { name } = req.body;
 
 		const existingUser = await User.findOne({ name });
 		if (existingUser) {
@@ -31,7 +30,7 @@ const addUser = async (req: any, res: any) => {
 
 		res.status(200).json({ isSuccess: true, message: `User Added` });
 	} catch (error) {
-		logger.error(`Error in addUser: ${error.message}`);
+		logger.error(`Error in addUser: ${error}`);
 		res
 			.status(500)
 			.json({ isSuccess: false, message: 'Internal Server Error' });

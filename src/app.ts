@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 // all routes
 const UserRoute = require('./routes/user');
+const KeyRoute = require('./routes/key');
 
 // utils
 const logger = require('./utils/logger');
@@ -30,7 +31,8 @@ app.use(express.json());
 app.use(middleware.requestLogger);
 
 // endpoints
-app.use('/api/user', UserRoute)
+app.use('/api/user', UserRoute);
+app.use('/api/early', KeyRoute);
 
 // ending middlewares
 app.use(middleware.unknownEndPoint);

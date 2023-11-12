@@ -12,7 +12,7 @@ interface IUserDocument extends IUser {}
 interface IUserModel extends Model<IUserDocument> {}
 
 const UserSchema: Schema = new Schema<IUserDocument, IUserModel>({
-	name: { type: String, required: true, unique: true },
+	name: { type: String, required: true },
 	lastUsed: { type: Date, required: true },
 	numberOfUsagePerDay: { type: Number, default: 0 },
 });
