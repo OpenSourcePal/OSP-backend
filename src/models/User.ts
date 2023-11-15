@@ -4,8 +4,15 @@ export interface IUser extends Document {
 	_id: ObjectId;
 	name: string;
 	lastUsed: Date;
-	numberOfUsagePerDay: number;
+	numberOfUsagePerDay: {
+		number: number;
+		date: Date;
+	};
 	isAllowed: boolean;
+	projects: {
+		name: string;
+		hasReadReadme: boolean;
+	}[];
 }
 
 interface IUserDocument extends IUser {}
@@ -13,11 +20,26 @@ interface IUserDocument extends IUser {}
 interface IUserModel extends Model<IUserDocument> {}
 
 const UserSchema: Schema = new Schema<IUserDocument, IUserModel>({
-	name: { type: String, required: true },
+	name: { type: String, required: true, unique: true },
 	lastUsed: { type: Date, required: true },
-	numberOfUsagePerDay: { type: Number, default: 0 },
+	numberOfUsagePerDay: {
+		type: {
+			number: Number,
+			date: Date,
+		},
+	},
 	isAllowed: { type: Boolean, default: false },
+	projects: {
+		type: [
+			{
+				name: { type: String, required: true },
+				hasReadReadme: { type: Boolean, default: false },
+			},
+		],
+		default: [],
+	},
 });
+
 
 UserSchema.set('toJSON', {
 	transform: (document, objectToBeReturned) => {
