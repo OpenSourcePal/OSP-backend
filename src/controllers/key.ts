@@ -127,11 +127,8 @@ const checkKey = async (req: any, res: any) => {
 		let isAKey = false;
 
 		encryptedKey.forEach((item, index) => {
-      console.log({SECRET, item})
 			const bytes = crypto.AES.decrypt(item, SECRET as string);
-			console.log({ bytes });
 			const decrypted = bytes.toString(crypto.enc.Utf8);
-			console.log({ decrypted });
 			if (decrypted !== key) return;
 			isAKey = true;
 			encryptedKey.splice(index, 1);
