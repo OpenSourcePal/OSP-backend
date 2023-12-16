@@ -117,6 +117,7 @@ const checkKey = async (req: any, res: any) => {
 		}
 
 		const user = await User.findOne({ name });
+    console.log({ user });
 		if (user.isAllowed) {
 			return res
 				.status(204)
@@ -127,7 +128,9 @@ const checkKey = async (req: any, res: any) => {
 
 		encryptedKey.forEach((item, index) => {
 			const bytes = crypto.AES.decrypt(item, SECRET as string);
+			console.log({ bytes, item });
 			const decrypted = bytes.toString(crypto.enc.Utf8);
+			console.log({ decrypted });
 			if (decrypted !== key) return;
 			isAKey = true;
 			encryptedKey.splice(index, 1);
