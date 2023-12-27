@@ -1,6 +1,6 @@
-const { User } = require('../models/User');
-
 const crypto = require('crypto-js');
+
+const { User } = require('../models/User');
 const logger = require('../utils/logger');
 const { SECRET } = require('../utils/config');
 
@@ -117,7 +117,7 @@ const checkKey = async (req: any, res: any) => {
 		}
 
 		const user = await User.findOne({ name });
-    
+
 		if (user.isAllowed) {
 			return res
 				.status(204)

@@ -1,9 +1,12 @@
+const jwt = require('jsonwebtoken');
+
 const logger = require('../utils/logger');
+const { SECRET } = require('../utils/config');
 
 const { User } = require('../models/User');
 
 const addUser = async (req: any, res: any) => {
-  try {
+	try {
 		const { name } = req.body;
 		if (!name) {
 			return res
@@ -12,8 +15,11 @@ const addUser = async (req: any, res: any) => {
 		}
 
 		const existingUser = await User.findOne({ name });
+		const token = jwt.sign({ name }, SECRET, { expiresIn: '31d' });
 		if (existingUser) {
-			return res.status(200).json({ isSuccess: true, message: existingUser });
+			return res
+				.status(200)
+				.json({ isSuccess: true, message: existingUser, token });
 		}
 
 		const userDetails = {
@@ -26,7 +32,7 @@ const addUser = async (req: any, res: any) => {
 		const user = new User(userDetails);
 		await user.save();
 
-		res.status(200).json({ isSuccess: true, message: user });
+		res.status(200).json({ isSuccess: true, message: user, token });
 	} catch (error) {
 		logger.error(`Error in addUser: ${error}`);
 		res
@@ -79,4 +85,33 @@ const updateCount = async (req: any, res: any) => {
 	}
 };
 
-module.exports = { addUser, updateCount };
+const protectedRoute = (req: any, res: any, next: any) => {
+	const authHeader = req.headers.authorization;
+
+	if (authHeader) {
+		const token = authHeader.split(' ')[1];
+
+		jwt.verify(token, SECRET, async (err: any, decoded: any) => {
+			if (err) {
+				res.status(401).json({ isSuccess: false, message: 'invalid token' });
+			} else {
+				// Assign the decoded email to the request object
+				req.user = decoded.name;
+				console.log({ name: decoded.name });
+				// check if user exists
+				const user = await User.findOne({ name: decoded.name });
+				console.log({ user });
+				if (!user) {
+					return res.status(400).json({
+						message: 'User doesn`t exist',
+					});
+				}
+				next();
+			}
+		});
+	} else {
+		res.status(401).json({ message: 'Missing authorization header' });
+	}
+};
+
+module.exports = { addUser, updateCount, protectedRoute };
