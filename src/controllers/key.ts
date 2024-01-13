@@ -125,7 +125,6 @@ const checkKey = async (req: any, res: any) => {
 		}
 
     let isAKey = false;
-		console.log({ isdevmode: process.env.NODE_ENV });
 		if (process.env.NODE_ENV === 'development') {
 			if (key === 'devmode') isAKey = true;
 		} else {
