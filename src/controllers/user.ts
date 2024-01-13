@@ -41,54 +41,54 @@ const addUser = async (req: any, res: any) => {
 	}
 };
 
-const updateCount = async (req: any, res: any) => {
-	console;
-	try {
-		const { name } = req.body;
-		if (!name) {
-			return res
-				.status(401)
-				.json({ isSuccess: false, message: 'No data received from client' });
-		}
+// const updateCount = async (req: any, res: any) => {
+// 	console;
+// 	try {
+// 		const { name } = req.body;
+// 		if (!name) {
+// 			return res
+// 				.status(401)
+// 				.json({ isSuccess: false, message: 'No data received from client' });
+// 		}
 
-		const user = await User.findOne({ name });
-		if (!user) {
-			return res
-				.status(401)
-				.json({ isSuccess: false, message: `User doesn't exist` });
-		}
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
+// 		const user = await User.findOne({ name });
+// 		if (!user) {
+// 			return res
+// 				.status(401)
+// 				.json({ isSuccess: false, message: `User doesn't exist` });
+// 		}
+// 		const today = new Date();
+// 		today.setHours(0, 0, 0, 0);
 
-		// Check if the date matches today
-		if (user.numberOfUsagePerDay?.date?.getTime() === today.getTime()) {
-			// Check the usage limit
-			if (user.numberOfUsagePerDay.number >= 3) {
-				// Limit exceeded
-				return res
-					.status(406)
-					.json({ isSuccess: false, message: `User has exist the limit` });
-			} else {
-				user.numberOfUsagePerDay.number++;
-			}
-		} else {
-			// No entry for today, create one
-			user.numberOfUsagePerDay = { number: 1, date: today };
-		}
-		await user.save();
-		return res.status(204).json({ isSuccess: true, message: `Go ahead` });
-	} catch (error) {
-		logger.error(`Error in addUser: ${error}`);
-		res
-			.status(500)
-			.json({ isSuccess: false, message: 'Internal Server Error' });
-	}
-};
+// 		// Check if the date matches today
+// 		if (user.numberOfUsagePerDay?.date?.getTime() === today.getTime()) {
+// 			// Check the usage limit
+// 			if (user.numberOfUsagePerDay.number >= 3) {
+// 				// Limit exceeded
+// 				return res
+// 					.status(406)
+// 					.json({ isSuccess: false, message: `User has exist the limit` });
+// 			} else {
+// 				user.numberOfUsagePerDay.number++;
+// 			}
+// 		} else {
+// 			// No entry for today, create one
+// 			user.numberOfUsagePerDay = { number: 1, date: today };
+// 		}
+// 		await user.save();
+// 		return res.status(204).json({ isSuccess: true, message: `Go ahead` });
+// 	} catch (error) {
+// 		logger.error(`Error in addUser: ${error}`);
+// 		res
+// 			.status(500)
+// 			.json({ isSuccess: false, message: 'Internal Server Error' });
+// 	}
+// };
 
 const protectedRoute = (req: any, res: any, next: any) => {
 	const authHeader = req.headers.authorization;
 
-	if (authHeader) {
+  if (authHeader) {
 		const token = authHeader.split(' ')[1];
 
 		jwt.verify(token, SECRET, async (err: any, decoded: any) => {
@@ -114,4 +114,4 @@ const protectedRoute = (req: any, res: any, next: any) => {
 	}
 };
 
-module.exports = { addUser, updateCount, protectedRoute };
+module.exports = { addUser, protectedRoute };

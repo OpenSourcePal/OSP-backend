@@ -2,12 +2,12 @@ const jwt = require('jsonwebtoken');
 const express = require('express');
 const UserRouter = express.Router();
 
-const { addUser, updateCount, protectedRoute } = require('../controllers/user');
+const { addUser} = require('../controllers/user');
 const { SECRET } = require('../utils/config');
 const { User } = require('../models/User');
 
 UserRouter.route('/addUser').post(addUser);
-UserRouter.route('/updateCount').post(protectedRoute, updateCount);
+// UserRouter.route('/updateCount').post(protectedRoute, updateCount);
 UserRouter.route('/protected').get(async (req: any, res: any) => {
 	const authHeader = req.headers.authorization;
 
