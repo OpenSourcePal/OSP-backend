@@ -1,8 +1,8 @@
-const crypto = require('crypto-js');
+import crypto from 'crypto-js';
 
-const { User } = require('../models/User');
-const logger = require('../utils/logger');
-const { SECRET } = require('../utils/config');
+import { User } from '../models/User';
+import { info, error } from '../utils/logger';
+import { SECRET } from '../utils/config';
 
 const encryptedKey: string[] = [
 	'U2FsdGVkX1/e16lPpyRpRmDFBr92LfAxo4v5uCyMnmI=',
@@ -107,7 +107,7 @@ const encryptedKey: string[] = [
 	'U2FsdGVkX1+ch8r1s20phO9wWAHOhQYecP8uDL5kaHs=',
 ];
 
-const checkKey = async (req: any, res: any) => {
+export const checkKey = async (req: any, res: any) => {
 	try {
 		const { key, name } = req.body;
 		if (!key || !name) {
@@ -124,7 +124,7 @@ const checkKey = async (req: any, res: any) => {
 				.json({ isSuccess: true, message: 'Key is correct' });
 		}
 
-    let isAKey = false;
+		let isAKey = false;
 		if (process.env.NODE_ENV === 'development') {
 			if (key === 'devmode') isAKey = true;
 		} else {
@@ -147,12 +147,10 @@ const checkKey = async (req: any, res: any) => {
 				.status(406)
 				.json({ isSuccess: isAKey, message: 'Key is incorrect' });
 		}
-	} catch (error) {
-		logger.error(`Error in key: ${error}`);
+	} catch (err) {
+		error(`Error in key: ${err}`);
 		res
 			.status(500)
 			.json({ isSuccess: false, message: 'Internal Server Error' });
 	}
 };
-
-module.exports = checkKey;

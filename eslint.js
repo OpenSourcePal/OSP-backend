@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
 		ecmaVersion: 'latest', // Allows the use of modern ECMAScript features

@@ -1,12 +1,12 @@
-const jwt = require('jsonwebtoken');
-const express = require('express');
+import jwt from 'jsonwebtoken';
+import express from 'express';
 const UserRouter = express.Router();
 
-const { addUser} = require('../controllers/user');
-const { SECRET } = require('../utils/config');
-const { User } = require('../models/User');
+import { addUser } from '../controllers/user';
+import { SECRET } from '../utils/config';
+import { User } from '../models/User';
 
-UserRouter.route('/addUser').post(addUser);
+UserRouter.route('/user').post(addUser);
 // UserRouter.route('/updateCount').post(protectedRoute, updateCount);
 UserRouter.route('/protected').get(async (req: any, res: any) => {
 	const authHeader = req.headers.authorization;
@@ -15,7 +15,7 @@ UserRouter.route('/protected').get(async (req: any, res: any) => {
 		const token = authHeader.split(' ')[1];
 
 		try {
-			jwt.verify(token, SECRET, async (err: any, decoded: any) => {
+			jwt.verify(token, SECRET as string, async (err: any, decoded: any) => {
 				if (err) {
 					res.status(401).json({ isSuccess: false, message: 'invalid token' });
 				} else {
@@ -41,4 +41,4 @@ UserRouter.route('/protected').get(async (req: any, res: any) => {
 	}
 });
 
-module.exports = UserRouter;
+export default UserRouter;

@@ -1,25 +1,24 @@
-const logger = require('./logger');
+import { info, error } from './logger';
 
-const requestLogger = (request: any, response: any, next: any) => {
-	logger.info('Method:', request.method);
-	logger.info('Path:  ', request.path);
-	logger.info('Body:  ', request.body);
-	logger.info('---');
+export const requestLogger = (request: any, response: any, next: any) => {
+	info('Method:', request.method);
+	info('Path:  ', request.path);
+	info('Body:  ', request.body);
+	info('---');
 	next();
 };
 
-const unknownEndPoint = (request: any, response: any) => {
+export const unknownEndPoint = (request: any, response: any) => {
 	response.status(404).send({ error: 'unknown endpoint' });
 };
 
-const errorHandler = (error: any, request: any, response: any, next: any) => {
-	logger.error(error.message);
+export const errorHandler = (
+	error: any,
+	request: any,
+	response: any,
+	next: any,
+) => {
+	error(error.message);
 
 	next(error);
-};
-
-module.exports = {
-	requestLogger,
-	unknownEndPoint,
-	errorHandler,
 };

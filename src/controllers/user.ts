@@ -1,11 +1,11 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-const logger = require('../utils/logger');
-const { SECRET } = require('../utils/config');
+import { info, error } from '../utils/logger';
+import { SECRET } from '../utils/config';
 
-const { User } = require('../models/User');
+import { User } from '../models/User';
 
-const addUser = async (req: any, res: any) => {
+export const addUser = async (req: any, res: any) => {
 	try {
 		const { name } = req.body;
 		if (!name) {
@@ -15,7 +15,7 @@ const addUser = async (req: any, res: any) => {
 		}
 
 		const existingUser = await User.findOne({ name });
-		const token = jwt.sign({ name }, SECRET, { expiresIn: '31d' });
+		const token = jwt.sign({ name }, SECRET as string, { expiresIn: '31d' });
 		if (existingUser) {
 			return res
 				.status(200)
@@ -27,14 +27,14 @@ const addUser = async (req: any, res: any) => {
 			lastUsed: new Date(),
 		};
 
-		logger.info(userDetails);
+		info(userDetails);
 
 		const user = new User(userDetails);
 		await user.save();
 
 		res.status(200).json({ isSuccess: true, message: user, token });
-	} catch (error) {
-		logger.error(`Error in addUser: ${error}`);
+	} catch (err) {
+		error(`Error in addUser: ${err}`);
 		res
 			.status(500)
 			.json({ isSuccess: false, message: 'Internal Server Error' });
@@ -78,20 +78,20 @@ const addUser = async (req: any, res: any) => {
 // 		await user.save();
 // 		return res.status(204).json({ isSuccess: true, message: `Go ahead` });
 // 	} catch (error) {
-// 		logger.error(`Error in addUser: ${error}`);
+// 		error(`Error in addUser: ${error}`);
 // 		res
 // 			.status(500)
 // 			.json({ isSuccess: false, message: 'Internal Server Error' });
 // 	}
 // };
 
-const protectedRoute = (req: any, res: any, next: any) => {
+export const protectedRoute = (req: any, res: any, next: any) => {
 	const authHeader = req.headers.authorization;
 
-  if (authHeader) {
+	if (authHeader) {
 		const token = authHeader.split(' ')[1];
 
-		jwt.verify(token, SECRET, async (err: any, decoded: any) => {
+		jwt.verify(token, SECRET as string, async (err: any, decoded: any) => {
 			if (err) {
 				res.status(401).json({ isSuccess: false, message: 'invalid token' });
 			} else {
@@ -113,5 +113,3 @@ const protectedRoute = (req: any, res: any, next: any) => {
 		res.status(401).json({ message: 'Missing authorization header' });
 	}
 };
-
-module.exports = { addUser, protectedRoute };

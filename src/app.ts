@@ -1,41 +1,45 @@
 // modules
-const express = require('express');
+import express from 'express';
 const app = express();
-const cors = require('cors');
-const mongoose = require('mongoose');
+import cors from 'cors';
+import mongoose from 'mongoose';
 
 // all routes
-const UserRoute = require('./routes/user');
-const KeyRoute = require('./routes/key');
+import UserRoute from './routes/user';
+import KeyRoute from './routes/key';
 
 // utils
-const logger = require('./utils/logger');
-const config = require('./utils/config');
-const middleware = require('./utils/middleware');
+import { info, error } from './utils/logger';
+import { MONGODB_URI } from './utils/config';
+import {
+	requestLogger,
+	unknownEndPoint,
+	errorHandler,
+} from './utils/middleware';
 
 mongoose.set('strictQuery', false);
-logger.info('connecting to', config.MONGODB_URI);
+info('connecting to', MONGODB_URI);
 
 mongoose
-	.connect(config.MONGODB_URI)
+	.connect(MONGODB_URI as string)
 	.then(() => {
-		logger.info('connected');
+		info('connected');
 	})
 	.catch((err: String) => {
-		logger.error('error occurred while connecting: ', err);
+		error('error occurred while connecting: ', err);
 	});
 
 // middleware
 app.use(cors());
 app.use(express.json());
-app.use(middleware.requestLogger);
+app.use(requestLogger);
 
 // endpoints
-app.use('/api/user', UserRoute);
-app.use('/api/early', KeyRoute);
+app.use('/api', UserRoute);
+app.use('/api', KeyRoute);
 
 // ending middlewares
-app.use(middleware.unknownEndPoint);
-app.use(middleware.errorHandler);
+app.use(unknownEndPoint);
+app.use(errorHandler);
 
-module.exports = app;
+export default app;

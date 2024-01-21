@@ -1,6 +1,7 @@
-const KeyRouter = require('express').Router();
-const checkKey = require('../controllers/key');
+import { Router } from 'express';
+const KeyRouter = Router();
+import { checkKey } from '../controllers/key';
 
-KeyRouter.route('/checkKey').post(checkKey);
+KeyRouter.route('/key').post(checkKey);
 
-module.exports = KeyRouter;
+export default KeyRouter;
