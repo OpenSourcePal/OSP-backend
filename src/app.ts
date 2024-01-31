@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
 
 // all routes
 import UserRoute from './routes/user';
-import KeyRoute from './routes/key';
 
 // utils
 import { info, error } from './utils/logger';
@@ -36,7 +35,6 @@ app.use(requestLogger);
 
 // endpoints
 app.use('/api', UserRoute);
-app.use('/api', KeyRoute);
 
 // ending middlewares
 app.use(unknownEndPoint);

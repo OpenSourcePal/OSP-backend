@@ -7,7 +7,6 @@ import { SECRET } from '../utils/config';
 import { User } from '../models/User';
 
 UserRouter.route('/user').post(addUser);
-// UserRouter.route('/updateCount').post(protectedRoute, updateCount);
 UserRouter.route('/protected').get(async (req: any, res: any) => {
 	const authHeader = req.headers.authorization;
 
